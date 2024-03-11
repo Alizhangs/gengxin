@@ -1,886 +1,552 @@
-#---------------------------------------------------#
-# 配置文件需要放置在 $HOME/.config/clash/config.yml
-# 或者运行目录下的config.yml
-#---------------------------------------------------#
-# 混合端口 HTTP和SOCKS5用一个端口
-mixed-port: 7890
-
-# HTTP 代理端口
-# port: 7890
-
-# SOCKS5 代理端口
-socks-port: 7891
-
-# Linux 和 macOS 的 redir 代理端口 (如需使用此功能，请取消注释)
-# redir-port: 7892
-
-# 允许局域网的连接（可用来共享代理）
-allow-lan: true
-
-# 仅在将allow-lan设置为true时适用
-# #"*": 绑定所有IP地址
-# #192.168.122.11: 绑定单个IPv4地址
-# #"[aaaa::a8aa:ff:fe09:57d8]": 绑定单个IPv6地址
-bind-address: "*"
-ipv6: true
-
-# 规则模式：rule（规则） / global（全局代理）/ direct（全局直连）/ script (脚本)
-# mode: rule
-
-# 设置日志输出级别 (默认级别：silent，即不输出任何内容，以避免因日志内容过大而导致程序内存溢出）。
-# 5 个级别：silent / error / warning / info / debug。级别越高日志输出量越大，越倾向于调试，若需要请自行开启。
+mixed-port: 7896
+allow-lan: false
+mode: rule
 log-level: info
-
-# Clash 的 RESTful API
 external-controller: '127.0.0.1:9097'
-
-# 您可以将静态网页资源（如 clash-dashboard）放置在一个目录中，clash 将会服务于 `RESTful API/ui`
-# 参数应填写配置目录的相对路径或绝对路径。
-# http://127.0.0.1:9090/ui/#/
-# external-ui: folder
-# yacd面板：  https://github.com/haishanh/yacd
-# Razord面板：http://clash.razord.top/#/proxies
-# external-ui: dashboard
-
-# RESTful API 的口令 (可选)
-# secret: ""
-
-# 实验性功能
-experimental:
-  ignore-resolve-fail: true # 忽略 DNS 解析失败，默认值为 true
-  # interface-name: en0 # outbound interface name
-
-# 本地 SOCKS5 / HTTP(S) 服务认证
-# authentication:
-#  - "user1:pass1"
-#  - "user2:pass2"
-
-# 实验性功能 hosts, 支持通配符 (例如 *.clash.dev 甚至 *.foo.*.example.com)
-# 静态的域名 比 通配域名 具有更高的优先级 (foo.example.com 优先于 *.example.com)
-# 注意: hosts 在 fake-ip 模式下不生效
-#hosts:
-#   '*.clash.dev': 127.0.0.1
-#   'alpha.clash.dev': '::1'
-
-#dns:
-  #enable: true # 是否启用dns false
-  #ipv6: false
-  #listen: 127.0.0.1:35353
-  #enhanced-mode: redir-host # 模式：redir-host或fake-ip
-  #fake-ip-range: 198.18.0.1/16 #
-  #fake-ip-filter:['*.lan', 'stun.*.*.*', 'stun.*.*', time.windows.com, time.nist.gov, time.apple.com, time.asia.apple.com, '*.ntp.org.cn', '*.openwrt.pool.ntp.org', time1.cloud.tencent.com, time.ustc.edu.cn, pool.ntp.org, ntp.ubuntu.com, ntp.aliyun.com, ntp1.aliyun.com, ntp2.aliyun.com, ntp3.aliyun.com, ntp4.aliyun.com, ntp5.aliyun.com, ntp6.aliyun.com, ntp7.aliyun.com, time1.aliyun.com, time2.aliyun.com, time3.aliyun.com, time4.aliyun.com, time5.aliyun.com, time6.aliyun.com, time7.aliyun.com, '*.time.edu.cn', time1.apple.com, time2.apple.com, time3.apple.com, time4.apple.com, time5.apple.com, time6.apple.com, time7.apple.com, time1.google.com, time2.google.com, time3.google.com, time4.google.com, music.163.com, '*.music.163.com', '*.126.net', musicapi.taihe.com, music.taihe.com, songsearch.kugou.com, trackercdn.kugou.com, '*.kuwo.cn', api-jooxtt.sanook.com, api.joox.com, joox.com, y.qq.com, '*.y.qq.com', streamoc.music.tc.qq.com, mobileoc.music.tc.qq.com, isure.stream.qqmusic.qq.com, dl.stream.qqmusic.qq.com, aqqmusic.tc.qq.com, amobile.music.tc.qq.com, '*.xiami.com', '*.music.migu.cn', music.migu.cn, '*.msftconnecttest.com', '*.msftncsi.com', localhost.ptlogin2.qq.com, '*.*.*.srv.nintendo.net', '*.*.stun.playstation.net', 'xbox.*.*.microsoft.com', '*.ipv6.microsoft.com', '*.*.xboxlive.com', speedtest.cros.wr.pvp.net]
-  #nameserver:[223.6.6.6, 180.76.76.76, 'https://223.6.6.6/dns-query', 'https://rubyfish.cn/dns-query', 'https://doh.pub/dns-query', 'https://dns.alidns.com/dns-query']
-  #fallback:[119.29.29.29, 114.114.115.115, 'https://dns.rubyfish.cn/dns-query', 'tls://8.8.4.4', 'tls://1.0.0.1:853', 'https://cloudflare-dns.com/dns-query', 'https://dns.google/dns-query']
-  #fallback-filter:{ geoip: true, ipcidr: [240.0.0.0/4, 0.0.0.0/32, 127.0.0.1/32], domain: [+.google.com, +.facebook.com, +.twitter.com, +.youtube.com, +.xn--ngstr-lra8j.com, +.google.cn, +.googleapis.cn, +.googleapis.com, +.gvt1.com] }
-
-# 1. clash DNS 请求逻辑：
-#   (1) 当访问一个域名时， nameserver 与 fallback 列表内的所有服务器并发请求，得到域名对应的 IP 地址。
-#   (2) clash 将选取 nameserver 列表内，解析最快的结果。
-#   (3) 若解析结果中，IP 地址属于 国外，那么 clash 将选择 fallback 列表内，解析最快的结果。
-#
-#   因此，我在 nameserver 和 fallback 内都放置了无污染、解析速度较快的国内 DNS 服务器，以达到最快的解析速度。
-#   但是 fallback 列表内服务器会用在解析境外网站，为了结果绝对无污染，我仅保留了支持 DoT/DoH 的两个服务器。
-#
-# 2. clash DNS 配置注意事项：
-#   (1) 如果您为了确保 DNS 解析结果无污染，请仅保留列表内以 tls:// 或 https:// 开头的 DNS 服务器，但是通常对于国内域名没有必要。
-#   (2) 如果您不在乎可能解析到污染的结果，更加追求速度。请将 nameserver 列表的服务器插入至 fallback 列表内，并移除重复项。
-#
-# 3. 关于 DNS over HTTPS (DoH) 和 DNS over TLS (DoT) 的选择：
-#   对于两项技术双方各执一词，而且会无休止的争论，各有利弊。各位请根据具体需求自行选择，但是配置文件内默认启用 DoT，因为目前国内没有封锁或管制。
-#   DoH: 以 https:// 开头的 DNS 服务器。拥有更好的伪装性，且几乎不可能被运营商或网络管理封锁，但查询效率和安全性可能略低。
-#   DoT: 以 tls:// 开头的 DNS 服务器。拥有更高的安全性和查询效率，但端口有可能被管制或封锁。
-#   若要了解更多关于 DoH/DoT 相关技术，请自行查阅规范文档。
-
-# 代理组
-# 下面这3个不要引到订阅里去 要不会出错
-# Will be ignored after profile selection
-#proxies:
-#  - name: Shadowsocks
-#    type: socks5
-#    server: 127.0.0.1
-#    port: 1080
-#proxy-groups:
-#  - name: Proxy
-#    type: select
-#    proxies:
-#      - Shadowsocks
-#rules:
-#  - 'MATCH,DIRECT'
-
-# Clash for Windows
-# Proxies module latency test settings
-cfw-latency-timeout: 3000
-cfw-latency-url: http://www.gstatic.com/generate_204
-
-# 混合配置（mixin）
-# 支持向所有配置文件中注入公共属性设置
-#cfw-profile-mixin:
-  #dns:
-    #enable: true
-    #listen: :53
-    #enhanced-mode: fake-ip
-    #nameserver:
-     #- 223.5.5.5 # 阿里DNS
-     #- 180.76.76.76 # 百度DNS
-     #- 119.29.29.29 # 腾讯DNS
-     #- 117.50.11.11 # ONE DNS拦截版 恶意网站拦截、广告过滤
-     #- 117.50.10.10 # ONE DNS纯净版 直接返回其真实的响应结果
-     #- 114.114.114.114 # 114DNS
-  #experimental:
-    #interface-name: WLAN
-
-#自定义配置目录
-#cfw-profiles-path: 'C:\Users\Administrator\.config\clash\profiles'
-
-# 打断连接
-# Identify strategy of breaking connections after switching to a new proxy/profile/mode
-# Options for proxy: none, chain(proxy group in connection chains), all
-# Options for profile: true, false
-# Options for mode: true, false
-cfw-conn-break-strategy:
-  proxy: none # none/chain/all
-  profile: true # true/false
-  mode: false # true/false
-
-# 自定义状态栏图标
-#cfw-tray-icon:
-#default: .\resources\static\imgs\logo_64.png        # 默认图标
-#system-proxy-on: .\resources\static\imgs\custom.ico   # 开启系统代理后图标
-
-# 自定义字体
-#cfw-font-family: "Noto Sans TC"   # 系统中存在的字体
-
-# 自定义请求头
-#cfw-http-headers:
-  #token: "123456"
-  #cfw-version: "0.9.11"
-
-# 自定义节点排序
-# 可选参数：
-#  default：按配置文件定义节点顺序
-#  latency：按节点延迟升序排列
-#  alphabet：按节点名称字母表排列
-# Sort proxies in Proxies module by default/latency/alphabet
-cfw-proxies-order: default
-
-# 子进程 启动其他应用
-# Run child process after CFW started
-# Refer: https://docs.cfw.lbyczf.com/contents/childprocess.html
-#cfw-child-process:
-  # 启动订阅转换程序，端口号7893
-  #- command: "subconverter.exe" # run.cmd 程序名称 subconverter.exe -cfw >>logs/run.log 2>&1
-    #args:
-      #- "-cfw" # 运行参数1
-      #- "-f" # 运行参数2
-      #- "pref-acl4ssr.yml" # 运行参数3
-    #options:
-      #cwd: subconverter # 子进程工作目录
-      #detached: true # 子进程独立于其父进程运行
-      #shell: true # 则在 shell 中运行 command
-      #windowsHide: true # 隐藏子进程的控制台窗口
-  # 启动网易云，端口号3333
-  #- command: "unblockneteasemusic.exe" # 启动网易云
-    #args:
-      #- "-p" # 运行参数1
-      #- "3333" # 运行参数2
-    #options:
-      #cwd: unblockNeteaseMusic # 子进程工作目录
-      #detached: true # 子进程独立于其父进程运行
-      #shell: true # 则在 shell 中运行 command
-      #windowsHide: true # 隐藏子进程的控制台窗口
-
-# 系统代理跳过列表 cfw-bypass
-# System proxy will ignore these domains(or ipnet)
-# 系统代理跳过列表-备份的，不起作用，
-# 使用时可以将cfw-bypass-bak与cfw-bypass内容互换
-cfw-bypass-bak:
-  # 原有字段不用删除
-  - qq.com
-  - 'music.163.com' # 网易云域名1
-  - '*.music.126.net' # 网易云域名2
-  - localhost
-  - 127.*
-  - 10.*
-  - 172.16.*
-  - 172.17.*
-  - 172.18.*
-  - 172.19.*
-  - 172.20.*
-  - 172.21.*
-  - 172.22.*
-  - 172.23.*
-  - 172.24.*
-  - 172.25.*
-  - 172.26.*
-  - 172.27.*
-  - 172.28.*
-  - 172.29.*
-  - 172.30.*
-  - 172.31.*
-  - 192.168.*
-  - <local>
-# 系统代理跳过列表 起作用的
-cfw-bypass:
-  # 直连列表
-  # MyList
-  - "*.13th.tech"
-  - "*.423down.com"
-  - "*.bokecc.com"
-  - "*.chaipip.com"
-  - "*.chinaplay.store"
-  - "*.hrtsea.com"
-  - "*.kaikeba.com"
-  - "*.laomo.me"
-  - "*.mpyit.com"
-  - "*.msftconnecttest.com"
-  - "*.msftncsi.com"
-  - "*.qupu123.com"
-  - "*.pdfwifi.com"
-  - "*.zhenguanyu.biz"
-  - "*.zhenguanyu.com"
-  - "*.snapdrop.net"
-  - "*.tebex.io"
-  # CN域名直连(中国|公司|网络)
-  - "*.cn"
-  - "*.xn--fiqs8s"
-  - "*.xn--55qx5d"
-  - "*.xn--io0a7i"
-  # 中国国内常见域名关键词直连
-  - "*360buy*"
-  - "*alicdn*"
-  - "*alimama*"
-  - "*alipay*"
-  - "*appzapp*"
-  - "*baidupcs*"
-  - "*bilibili*"
-  - "*ccgslb*"
-  - "*chinacache*"
-  - "*duobao*"
-  - "*jdpay*"
-  - "*moke*"
-  - "*qhimg*"
-  - "*vpimg*"
-  - "*xiami*"
-  - "*xiaomi*"
-  # 360
-  - "*.360.com"
-  - "*.360kuai.com"
-  - "*.360safe.com"
-  - "*.dhrest.com"
-  - "*.qhres.com"
-  - "*.qhstatic.com"
-  - "*.qhupdate.com"
-  - "*.so.com"
-  # 4399
-  - "*.4399.com"
-  - "*.4399pk.com"
-  - "*.5054399.com"
-  - "*.img4399.com"
-  # 58
-  - "*.58.com"
-  # Alibaba
-  - "*.1688.com"
-  - "*.aliapp.org"
-  - "*.alibaba.com"
-  - "*.alibabacloud.com"
-  - "*.alibabausercontent.com"
-  - "*.alicdn.com"
-  - "*.alicloudccp.com"
-  - "*.aliexpress.com"
-  - "*.aliimg.com"
-  - "*.alikunlun.com"
-  - "*.alipay.com"
-  - "*.alipayobjects.com"
-  - "*.alisoft.com"
-  - "*.aliyun.com"
-  - "*.aliyuncdn.com"
-  - "*.aliyuncs.com"
-  - "*.aliyundrive.com"
-  - "*.aliyundrive.net"
-  - "*.amap.com"
-  - "*.autonavi.com"
-  - "*.dingtalk.com"
-  - "*.ele.me"
-  - "*.hichina.com"
-  - "*.mmstat.com"
-  - "*.mxhichina.com"
-  - "*.soku.com"
-  - "*.taobao.com"
-  - "*.taobaocdn.com"
-  - "*.tbcache.com"
-  - "*.tbcdn.com"
-  - "*.tmall.com"
-  - "*.tmall.hk"
-  - "*.ucweb.com"
-  - "*.xiami.com"
-  - "*.xiami.net"
-  - "*.ykimg.com"
-  - "*.youku.com"
-  # Baidu
-  - "*.baidu.com"
-  - "*.baidubcr.com"
-  - "*.baidupcs.com"
-  - "*.baidustatic.com"
-  - "*.bcebos.com"
-  - "*.bdimg.com"
-  - "*.bdstatic.com"
-  - "*.bdurl.net"
-  - "*.hao123.com"
-  - "*.hao123img.com"
-  - "*.jomodns.com"
-  - "*.yunjiasu-cdn.net"
-  # Bilibili
-  - "*.acg.tv"
-  - "*.acgvideo.com"
-  - "*.b23.tv"
-  - "*.bigfun.cn"
-  - "*.bigfunapp.cn"
-  - "*.biliapi.com"
-  - "*.biliapi.net"
-  - "*.bilibili.com"
-  - "*.bilibili.co"
-  - "*.biliintl.co"
-  - "*.biligame.com"
-  - "*.biligame.net"
-  - "*.bilivideo.com"
-  - "*.bilivideo.cn"
-  - "*.hdslb.com"
-  - "*.im9.com"
-  - "*.smtcdns.net"
-  # ByteDance
-  - "*.amemv.com"
-  - "*.bdxiguaimg.com"
-  - "*.bdxiguastatic.com"
-  - "*.byted-static.com"
-  - "*.bytedance.com"
-  - "*.bytedance.net"
-  - "*.bytedns.net"
-  - "*.bytednsdoc.com"
-  - "*.bytegoofy.com"
-  - "*.byteimg.com"
-  - "*.bytescm.com"
-  - "*.bytetos.com"
-  - "*.bytexservice.com"
-  - "*.douyin.com"
-  - "*.douyincdn.com"
-  - "*.douyinpic.com"
-  - "*.douyinstatic.com"
-  - "*.douyinvod.com"
-  - "*.feelgood.cn"
-  - "*.feiliao.com"
-  - "*.gifshow.com"
-  - "*.huoshan.com"
-  - "*.huoshanzhibo.com"
-  - "*.ibytedapm.com"
-  - "*.iesdouyin.com"
-  - "*.ixigua.com"
-  - "*.kspkg.com"
-  - "*.pstatp.com"
-  - "*.snssdk.com"
-  - "*.toutiao.com"
-  - "*.toutiao13.com"
-  - "*.toutiaoapi.com"
-  - "*.toutiaocdn.com"
-  - "*.toutiaocdn.net"
-  - "*.toutiaocloud.com"
-  - "*.toutiaohao.com"
-  - "*.toutiaohao.net"
-  - "*.toutiaoimg.com"
-  - "*.toutiaopage.com"
-  - "*.wukong.com"
-  - "*.zijieapi.com"
-  - "*.zijieimg.com"
-  - "*.zjbyte.com"
-  - "*.zjcdn.com"
-  # CCTV
-  - "*.cctv.com"
-  - "*.cctvpic.com"
-  - "*.livechina.com"
-  # ChinaNet
-  - "*.21cn.com"
-  # DiDi
-  - "*.didialift.com"
-  - "*.didiglobal.com"
-  - "*.udache.com"
-  # Douyu 斗鱼
-  - "*.douyu.com"
-  - "*.douyu.tv"
-  - "*.douyuscdn.com"
-  - "*.douyutv.com"
-  # Epic
-  - "*.epicgames.com"
-  - "*.epicgames.dev"
-  - "*.helpshift.com"
-  - "*.paragon.com"
-  - "*.unrealengine.com"
-  # HuaWei
-  - "*.dbankcdn.com"
-  - "*.hc-cdn.com"
-  - "*.hicloud.com"
-  - "*.hihonor.com"
-  - "*.huawei.com"
-  - "*.huaweicloud.com"
-  - "*.huaweishop.net"
-  - "*.hwccpc.com"
-  - "*.vmall.com"
-  - "*.vmallres.com"
-  # Heytap
-  - "*.allawnfs.com"
-  - "*.allawno.com"
-  - "*.allawntech.com"
-  - "*.coloros.com"
-  - "*.heytap.com"
-  - "*.heytapcs.com"
-  - "*.heytapdownload.com"
-  - "*.heytapimage.com"
-  - "*.heytapmobi.com"
-  - "*.oppo.com"
-  - "*.oppoer.me"
-  - "*.oppomobile.com"
-  # Iflytek 科大讯飞
-  - "*.iflyink.com"
-  - "*.iflyrec.com"
-  - "*.iflytek.com"
-  # Iqiyi
-  - "*.71.am"
-  - "*.71edge.com"
-  - "*.iqiyi.com"
-  - "*.iqiyipic.com"
-  - "*.ppsimg.com"
-  - "*.qiyi.com"
-  - "*.qiyipic.com"
-  - "*.qy.net"
-  # JD
-  - "*.360buy.com"
-  - "*.360buyimg.com"
-  - "*.jcloudcs.com"
-  - "*.jd.com"
-  - "*.jd.hk"
-  - "*.jdcloud.com"
-  - "*.jdpay.com"
-  - "*.paipai.com"
-  # Kingsoft
-  - "*.iciba.com"
-  - "*.ksosoft.com"
-  - "*.ksyun.com"
-  # Kuaishou 快手
-  - "*.kuaishou.com"
-  - "*.yximgs.com"
-  # Meitu
-  - "*.meitu.com"
-  - "*.meitudata.com"
-  - "*.meitustat.com"
-  - "*.meipai.com"
-  # LeTV 乐视
-  - "*.le.com"
-  - "*.lecloud.com"
-  - "*.letv.com"
-  - "*.letvcloud.com"
-  - "*.letvimg.com"
-  - "*.letvlive.com"
-  - "*.letvstore.com"
-  # MGTV 芒果TV
-  - "*.hitv.com"
-  - "*.hunantv.com"
-  - "*.mgtv.com"
-  # MI
-  - "*.duokan.com"
-  - "*.mi-img.com"
-  - "*.mi.com"
-  - "*.miui.com"
-  - "*.xiaomi.com"
-  - "*.xiaomi.net"
-  - "*.xiaomicp.com"
-  # NetEase
-  - "*.126.com"
-  - "*.126.net"
-  - "*.127.net"
-  - "*.163.com"
-  - "*.163yun.com"
-  - "*.lofter.com"
-  - "*.netease.com"
-  - "*.ydstatic.com"
-  - "*.youdao.com"
-  # PPTV、PPLive
-  - "*.pplive.com"
-  - "*.pptv.com"
-  # PDD 拼多多
-  - "*.pinduoduo.com"
-  - "*.yangkeduo.com"
-  # Sina
-  - "*.leju.com"
-  - "*.miaopai.com"
-  - "*.sina.com"
-  - "*.sina.com.cn"
-  - "*.sina.cn"
-  - "*.sinaapp.com"
-  - "*.sinaapp.cn"
-  - "*.sinaimg.com"
-  - "*.sinaimg.cn"
-  - "*.weibo.com"
-  - "*.weibo.cn"
-  - "*.weibocdn.com"
-  - "*.weibocdn.cn"
-  - "*.xiaoka.tv"
-  # Sohu Sogo
-  - "*.go2map.com"
-  - "*.sogo.com"
-  - "*.sogou.com"
-  - "*.sogoucdn.com"
-  - "*.sohu-inc.com"
-  - "*.sohu.com"
-  - "*.sohucs.com"
-  - "*.sohuno.com"
-  - "*.sohurdc.com"
-  - "*.v-56.com"
-  # Sony
-  - "*.playstation.com"
-  - "*.playstation.net"
-  - "*.playstationnetwork.com"
-  - "*.sony.com"
-  - "*.sonyentertainmentnetwork.com"
-  # SteamCN
-  - "*.cm.steampowered.com"
-  - "*.steamcontent.com"
-  - "*.steamusercontent.com"
-  - "*.steamchina.com"
-  - "csgo.wmsj.cn"
-  - "dota2.wmsj.cn"
-  - "wmsjsteam.com"
-  - "dl.steam.clngaa.com"
-  - "dl.steam.ksyna.com"
-  - "st.dl.bscstorage.net"
-  - "st.dl.eccdnx.com"
-  - "st.dl.pinyuncloud.com"
-  - "xz.pphimalayanrt.com"
-  - "steampipe.steamcontent.tnkjmec.com"
-  - "steampowered.com.8686c.com"
-  - "steamstatic.com.8686c.com"
-  # Tencent
-  - "*.foxmail.com"
-  - "*.gtimg.com"
-  - "*.idqqimg.com"
-  - "*.igamecj.com"
-  - "*.myapp.com"
-  - "*.myqcloud.com"
-  - "*.qq.com"
-  - "*.qqmail.com"
-  - "*.qqurl.com"
-  - "*.smtcdns.com"
-  - "*.smtcdns.net"
-  - "*.soso.com"
-  - "*.tencent-cloud.net"
-  - "*.tencent.com"
-  - "*.tencentmind.com"
-  - "*.tenpay.com"
-  - "*.wechat.com"
-  - "*.weixin.com"
-  - "*.weiyun.com"
-  # Vip 唯品会
-  - "*.appsimg.com"
-  - "*.appvipshop.com"
-  - "*.vip.com"
-  - "*.vipstatic.com"
-  # Ximalaya 喜马拉雅
-  - "*.ximalaya.com"
-  - "*.xmcdn.com"
-  # Xunlei 迅雷
-  - "*.00cdn.com"
-  - "*.88cdn.com"
-  - "*.kanimg.com"
-  - "*.kankan.com"
-  - "*.p2cdn.com"
-  - "*.sandai.net"
-  - "*.thundercdn.com"
-  - "*.xunlei.com"
-  # YYeTs 人人影视
-  - "*.got001.com"
-  - "*.p4pfile.com"
-  - "*.rrys.tv"
-  - "*.rrys2020.com"
-  - "*.yyets.com"
-  - "*.zimuzu.io"
-  - "*.zimuzu.tv"
-  - "*.zmz001.com"
-  - "*.zmz002.com"
-  - "*.zmz003.com"
-  - "*.zmz004.com"
-  - "*.zmz2019.com"
-  - "*.zmzapi.com"
-  - "*.zmzapi.net"
-  - "*.zmzfile.com"
-  # TeamViewer
-  - "*.teamviewer.com"
-  # Public Direct CDN 公共直连
-  - "*.baomitu.com"
-  - "*.bootcss.com"
-  - "*.jiasule.com"
-  - "*.staticfile.org"
-  - "*.upaiyun.com"
-  # China DNS
-  - "*.doh.pub"
-  - "*.dns.alidns.com"
-  - "*.doh.360.cn"
-  # AccelerateDirectSites
-  - "*.10010.com"
-  - "*.115.com"
-  - "*.12306.com"
-  - "*.17173.com"
-  - "*.178.com"
-  - "*.17k.com"
-  - "*.360doc.com"
-  - "*.36kr.com"
-  - "*.3dmgame.com"
-  - "*.51cto.com"
-  - "*.51job.com"
-  - "*.51jobcdn.com"
-  - "*.56.com"
-  - "*.8686c.com"
-  - "*.abchina.com"
-  - "*.abercrombie.com"
-  - "*.acfun.tv"
-  - "*.air-matters.com"
-  - "*.air-matters.io"
-  - "*.aixifan.com"
-  - "*.algocasts.io"
-  - "*.babytree.com"
-  - "*.babytreeimg.com"
-  - "*.baicizhan.com"
-  - "*.baidupan.com"
-  - "*.baike.com"
-  - "*.biqudu.com"
-  - "*.biquge.com"
-  - "*.bitauto.com"
-  - "*.bosszhipin.com"
-  - "*.c-ctrip.com"
-  - "*.camera360.com"
-  - "*.cdnmama.com"
-  - "*.chaoxing.com"
-  - "*.che168.com"
-  - "*.chinacache.net"
-  - "*.chinaso.com"
-  - "*.chinaz.com"
-  - "*.chinaz.net"
-  - "*.chuimg.com"
-  - "*.cibntv.net"
-  - "*.clouddn.com"
-  - "*.cloudxns.net"
-  - "*.cn163.net"
-  - "*.cnblogs.com"
-  - "*.cnki.net"
-  - "*.cnmstl.net"
-  - "*.coolapk.com"
-  - "*.coolapkmarket.com"
-  - "*.csdn.net"
-  - "*.ctrip.com"
-  - "*.dangdang.com"
-  - "*.dfcfw.com"
-  - "*.dianping.com"
-  - "*.dilidili.wang"
-  - "*.douban.com"
-  - "*.doubanio.com"
-  - "*.dpfile.com"
-  - "*.duowan.com"
-  - "*.dxycdn.com"
-  - "*.dytt8.net"
-  - "*.easou.com"
-  - "*.eastday.com"
-  - "*.eastmoney.com"
-  - "*.ecitic.com"
-  - "*.element-plus.org"
-  - "*.ewqcxz.com"
-  - "*.fang.com"
-  - "*.fantasy.tv"
-  - "*.feng.com"
-  - "*.fengkongcloud.com"
-  - "*.fir.im"
-  - "*.frdic.com"
-  - "*.fresh-ideas.cc"
-  - "*.ganji.com"
-  - "*.ganjistatic1.com"
-  - "*.geetest.com"
-  - "*.geilicdn.com"
-  - "*.ghpym.com"
-  - "*.godic.net"
-  - "*.guazi.com"
-  - "*.gwdang.com"
-  - "*.gzlzfm.com"
-  - "*.haibian.com"
-  - "*.haosou.com"
-  - "*.hollisterco.com"
-  - "*.hongxiu.com"
-  - "*.huajiao.com"
-  - "*.hupu.com"
-  - "*.huxiucdn.com"
-  - "*.huya.com"
-  - "*.ifeng.com"
-  - "*.ifengimg.com"
-  - "*.images-amazon.com"
-  - "*.infzm.com"
-  - "*.ipip.net"
-  - "*.it168.com"
-  - "*.ithome.com"
-  - "*.ixdzs.com"
-  - "*.jianguoyun.com"
-  - "*.jianshu.com"
-  - "*.jianshu.io"
-  - "*.jianshuapi.com"
-  - "*.jiathis.com"
-  - "*.jmstatic.com"
-  - "*.jumei.com"
-  - "*.kaola.com"
-  - "*.knewone.com"
-  - "*.koowo.com"
-  - "*.ksyungslb.com"
-  - "*.kuaidi100.com"
-  - "*.kugou.com"
-  - "*.lancdns.com"
-  - "*.landiannews.com"
-  - "*.lanzou.com"
-  - "*.lanzoui.com"
-  - "*.lanzoux.com"
-  - "*.lemicp.com"
-  - "*.letitfly.me"
-  - "*.lizhi.fm"
-  - "*.lizhi.io"
-  - "*.lizhifm.com"
-  - "*.luoo.net"
-  - "*.lvmama.com"
-  - "*.lxdns.com"
-  - "*.maoyan.com"
-  - "*.meilishuo.com"
-  - "*.meituan.com"
-  - "*.meituan.net"
-  - "*.meizu.com"
-  - "*.migucloud.com"
-  - "*.miguvideo.com"
-  - "*.mobike.com"
-  - "*.mogu.com"
-  - "*.mogucdn.com"
-  - "*.mogujie.com"
-  - "*.moji.com"
-  - "*.moke.com"
-  - "*.msstatic.com"
-  - "*.mubu.com"
-  - "*.myunlu.com"
-  - "*.nruan.com"
-  - "*.nuomi.com"
-  - "*.onedns.net"
-  - "*.oneplus.com"
-  - "*.onlinedown.net"
-  - "*.oracle.com"
-  - "*.oschina.net"
-  - "*.ourdvs.com"
-  - "*.polyv.net"
-  - "*.qbox.me"
-  - "*.qcloud.com"
-  - "*.qcloudcdn.com"
-  - "*.qdaily.com"
-  - "*.qdmm.com"
-  - "*.qhimg.com"
-  - "*.qianqian.com"
-  - "*.qidian.com"
-  - "*.qihucdn.com"
-  - "*.qin.io"
-  - "*.qiniu.com"
-  - "*.qiniucdn.com"
-  - "*.qiniudn.com"
-  - "*.qiushibaike.com"
-  - "*.quanmin.tv"
-  - "*.qunar.com"
-  - "*.qunarzz.com"
-  - "*.realme.com"
-  - "*.repaik.com"
-  - "*.ruguoapp.com"
-  - "*.runoob.com"
-  - "*.sankuai.com"
-  - "*.segmentfault.com"
-  - "*.sf-express.com"
-  - "*.shumilou.net"
-  - "*.simplecd.me"
-  - "*.smzdm.com"
-  - "*.snwx.com"
-  - "*.soufunimg.com"
-  - "*.sspai.com"
-  - "*.startssl.com"
-  - "*.suning.com"
-  - "*.synology.com"
-  - "*.taihe.com"
-  - "*.th-sjy.com"
-  - "*.tianqi.com"
-  - "*.tianqistatic.com"
-  - "*.tianyancha.com"
-  - "*.tianyaui.com"
-  - "*.tietuku.com"
-  - "*.tiexue.net"
-  - "*.tmiaoo.com"
-  - "*.trip.com"
-  - "*.ttmeiju.com"
-  - "*.tudou.com"
-  - "*.tuniu.com"
-  - "*.tuniucdn.com"
-  - "*.umengcloud.com"
-  - "*.upyun.com"
-  - "*.uxengine.net"
-  - "*.videocc.net"
-  - "*.vivo.com"
-  - "*.wandoujia.com"
-  - "*.weather.com"
-  - "*.weico.cc"
-  - "*.weidian.com"
-  - "*.weiphone.com"
-  - "*.weiphone.net"
-  - "*.womai.com"
-  - "*.wscdns.com"
-  - "*.xdrig.com"
-  - "*.xhscdn.com"
-  - "*.xiachufang.com"
-  - "*.xiaohongshu.com"
-  - "*.xiaojukeji.com"
-  - "*.xinhuanet.com"
-  - "*.xip.io"
-  - "*.xitek.com"
-  - "*.xiumi.us"
-  - "*.xslb.net"
-  - "*.xueqiu.com"
-  - "*.yach.me"
-  - "*.yeepay.com"
-  - "*.yhd.com"
-  - "*.yihaodianimg.com"
-  - "*.yinxiang.com"
-  - "*.yinyuetai.com"
-  - "*.yixia.com"
-  - "*.ys168.com"
-  - "*.yuewen.com"
-  - "*.yy.com"
-  - "*.yystatic.com"
-  - "*.zealer.com"
-  - "*.zhangzishi.cc"
-  - "*.zhanqi.tv"
-  - "*.zhaopin.com"
-  - "*.zhihu.com"
-  - "*.zhimg.com"
-  - "*.zhipin.com"
-  - "*.zhongsou.com"
-  - "*.zhuihd.com"
-  - "localhost"
-  - 127.*
-  - 10.*
-  - 172.16.*
-  - 172.17.*
-  - 172.18.*
-  - 172.19.*
-  - 172.20.*
-  - 172.21.*
-  - 172.22.*
-  - 172.23.*
-  - 172.24.*
-  - 172.25.*
-  - 172.26.*
-  - 172.27.*
-  - 172.28.*
-  - 172.29.*
-  - 172.30.*
-  - 172.31.*
-  - 192.168.*
-  - <local>
+unified-delay: true
+dns:
+    enable: true
+    listen: '127.0.0.1:35353'
+    ipv6: true
+    default-nameserver: [223.5.5.5, 114.114.114.114]
+    enhanced-mode: fake-ip
+    fake-ip-range: 198.18.0.1/16
+    fake-ip-filter: ['*.lan', 'stun.*.*.*', 'stun.*.*', time.windows.com, time.nist.gov, time.apple.com, time.asia.apple.com, '*.ntp.org.cn', '*.openwrt.pool.ntp.org', time1.cloud.tencent.com, time.ustc.edu.cn, pool.ntp.org, ntp.ubuntu.com, ntp.aliyun.com, ntp1.aliyun.com, ntp2.aliyun.com, ntp3.aliyun.com, ntp4.aliyun.com, ntp5.aliyun.com, ntp6.aliyun.com, ntp7.aliyun.com, time1.aliyun.com, time2.aliyun.com, time3.aliyun.com, time4.aliyun.com, time5.aliyun.com, time6.aliyun.com, time7.aliyun.com, '*.time.edu.cn', time1.apple.com, time2.apple.com, time3.apple.com, time4.apple.com, time5.apple.com, time6.apple.com, time7.apple.com, time1.google.com, time2.google.com, time3.google.com, time4.google.com, music.163.com, '*.music.163.com', '*.126.net', musicapi.taihe.com, music.taihe.com, songsearch.kugou.com, trackercdn.kugou.com, '*.kuwo.cn', api-jooxtt.sanook.com, api.joox.com, joox.com, y.qq.com, '*.y.qq.com', streamoc.music.tc.qq.com, mobileoc.music.tc.qq.com, isure.stream.qqmusic.qq.com, dl.stream.qqmusic.qq.com, aqqmusic.tc.qq.com, amobile.music.tc.qq.com, '*.xiami.com', '*.music.migu.cn', music.migu.cn, '*.msftconnecttest.com', '*.msftncsi.com', localhost.ptlogin2.qq.com, '*.*.*.srv.nintendo.net', '*.*.stun.playstation.net', 'xbox.*.*.microsoft.com', '*.ipv6.microsoft.com', '*.*.xboxlive.com', speedtest.cros.wr.pvp.net]
+    nameserver: [223.6.6.6, 180.76.76.76, 'https://223.6.6.6/dns-query', 'https://rubyfish.cn/dns-query', 'https://doh.pub/dns-query', 'https://dns.alidns.com/dns-query']
+    fallback: [119.29.29.29, 114.114.115.115, 'https://dns.rubyfish.cn/dns-query', 'tls://8.8.4.4', 'tls://1.0.0.1:853', 'https://cloudflare-dns.com/dns-query', 'https://dns.google/dns-query']
+    fallback-filter: { geoip: true, ipcidr: [240.0.0.0/4, 0.0.0.0/32, 127.0.0.1/32], domain: [+.google.com, +.facebook.com, +.twitter.com, +.youtube.com, +.xn--ngstr-lra8j.com, +.google.cn, +.googleapis.cn, +.googleapis.com, +.gvt1.com] }
+proxy-providers:
+ onlyno999-0001:
+    type: http
+    path: ./sdcard/download/0001.yaml
+    url: "修改成自己的订阅地址"
+    interval: 12600
+    filter:
+    exclude-type: 
+    exclude-filter: "禁止爬取IP|做一个有公德心的人|请不要消磨一个人的耐心"
+    health-check: 
+      enable: true
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+proxy-groups:
+  - name: ✈️ 节点选择
+    type: select
+    proxies:
+      - ♻️ 自动选择
+      -    DIRECT
+      - ⚠️ 故障转移
+      - ⚖️ 负载均衡
+    use:
+      - onlyno999-0001
+  - name: ♻️ 自动选择
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 100
+    proxies:
+    use:
+      - onlyno999-0001
+  - name: ⚠️ 故障转移
+    type: fallback
+    interval: 180
+    tolerance: 50
+    proxies:
+    use:
+      - onlyno999-0001
+  - name: ⚖️ 负载均衡
+    type: load-balance
+    proxies:
+    use:
+      - onlyno999-0001
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    strategy: round-robin
+rules:
+    - 'DOMAIN,api1.xn--bnq37rc0nw50b.com,DIRECT'
+    - 'DOMAIN-SUFFIX,services.googleapis.cn, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,xn--ngstr-lra8j.com, ✈️ 节点选择'
+    - 'DOMAIN,safebrowsing.urlsec.qq.com,DIRECT'
+    - 'DOMAIN,safebrowsing.googleapis.com,DIRECT'
+    - 'DOMAIN,developer.apple.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,digicert.com, ✈️ 节点选择'
+    - 'DOMAIN,ocsp.apple.com, ✈️ 节点选择'
+    - 'DOMAIN,ocsp.comodoca.com, ✈️ 节点选择'
+    - 'DOMAIN,ocsp.usertrust.com, ✈️ 节点选择'
+    - 'DOMAIN,ocsp.sectigo.com, ✈️ 节点选择'
+    - 'DOMAIN,ocsp.verisign.net, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,apple-dns.net, ✈️ 节点选择'
+    - 'DOMAIN,testflight.apple.com, ✈️ 节点选择'
+    - 'DOMAIN,sandbox.itunes.apple.com, ✈️ 节点选择'
+    - 'DOMAIN,itunes.apple.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,apps.apple.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,blobstore.apple.com, ✈️ 节点选择'
+    - 'DOMAIN,cvws.icloud-content.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,mzstatic.com,DIRECT'
+    - 'DOMAIN-SUFFIX,itunes.apple.com,DIRECT'
+    - 'DOMAIN-SUFFIX,icloud.com,DIRECT'
+    - 'DOMAIN-SUFFIX,icloud-content.com,DIRECT'
+    - 'DOMAIN-SUFFIX,me.com,DIRECT'
+    - 'DOMAIN-SUFFIX,aaplimg.com,DIRECT'
+    - 'DOMAIN-SUFFIX,cdn20.com,DIRECT'
+    - 'DOMAIN-SUFFIX,cdn-apple.com,DIRECT'
+    - 'DOMAIN-SUFFIX,akadns.net,DIRECT'
+    - 'DOMAIN-SUFFIX,akamaiedge.net,DIRECT'
+    - 'DOMAIN-SUFFIX,edgekey.net,DIRECT'
+    - 'DOMAIN-SUFFIX,mwcloudcdn.com,DIRECT'
+    - 'DOMAIN-SUFFIX,mwcname.com,DIRECT'
+    - 'DOMAIN-SUFFIX,apple.com,DIRECT'
+    - 'DOMAIN-SUFFIX,apple-cloudkit.com,DIRECT'
+    - 'DOMAIN-SUFFIX,apple-mapkit.com,DIRECT'
+    - 'DOMAIN-SUFFIX,126.com,DIRECT'
+    - 'DOMAIN-SUFFIX,126.net,DIRECT'
+    - 'DOMAIN-SUFFIX,127.net,DIRECT'
+    - 'DOMAIN-SUFFIX,163.com,DIRECT'
+    - 'DOMAIN-SUFFIX,360buyimg.com,DIRECT'
+    - 'DOMAIN-SUFFIX,36kr.com,DIRECT'
+    - 'DOMAIN-SUFFIX,acfun.tv,DIRECT'
+    - 'DOMAIN-SUFFIX,air-matters.com,DIRECT'
+    - 'DOMAIN-SUFFIX,aixifan.com,DIRECT'
+    - 'DOMAIN-KEYWORD,alicdn,DIRECT'
+    - 'DOMAIN-KEYWORD,alipay,DIRECT'
+    - 'DOMAIN-KEYWORD,taobao,DIRECT'
+    - 'DOMAIN-SUFFIX,amap.com,DIRECT'
+    - 'DOMAIN-SUFFIX,autonavi.com,DIRECT'
+    - 'DOMAIN-KEYWORD,baidu,DIRECT'
+    - 'DOMAIN-SUFFIX,bdimg.com,DIRECT'
+    - 'DOMAIN-SUFFIX,bdstatic.com,DIRECT'
+    - 'DOMAIN-SUFFIX,bilibili.com,DIRECT'
+    - 'DOMAIN-SUFFIX,bilivideo.com,DIRECT'
+    - 'DOMAIN-SUFFIX,caiyunapp.com,DIRECT'
+    - 'DOMAIN-SUFFIX,clouddn.com,DIRECT'
+    - 'DOMAIN-SUFFIX,cnbeta.com,DIRECT'
+    - 'DOMAIN-SUFFIX,cnbetacdn.com,DIRECT'
+    - 'DOMAIN-SUFFIX,cootekservice.com,DIRECT'
+    - 'DOMAIN-SUFFIX,csdn.net,DIRECT'
+    - 'DOMAIN-SUFFIX,ctrip.com,DIRECT'
+    - 'DOMAIN-SUFFIX,dgtle.com,DIRECT'
+    - 'DOMAIN-SUFFIX,dianping.com,DIRECT'
+    - 'DOMAIN-SUFFIX,douban.com,DIRECT'
+    - 'DOMAIN-SUFFIX,doubanio.com,DIRECT'
+    - 'DOMAIN-SUFFIX,duokan.com,DIRECT'
+    - 'DOMAIN-SUFFIX,easou.com,DIRECT'
+    - 'DOMAIN-SUFFIX,ele.me,DIRECT'
+    - 'DOMAIN-SUFFIX,feng.com,DIRECT'
+    - 'DOMAIN-SUFFIX,fir.im,DIRECT'
+    - 'DOMAIN-SUFFIX,frdic.com,DIRECT'
+    - 'DOMAIN-SUFFIX,g-cores.com,DIRECT'
+    - 'DOMAIN-SUFFIX,godic.net,DIRECT'
+    - 'DOMAIN-SUFFIX,gtimg.com,DIRECT'
+    - 'DOMAIN,cdn.hockeyapp.net,DIRECT'
+    - 'DOMAIN-SUFFIX,hongxiu.com,DIRECT'
+    - 'DOMAIN-SUFFIX,hxcdn.net,DIRECT'
+    - 'DOMAIN-SUFFIX,iciba.com,DIRECT'
+    - 'DOMAIN-SUFFIX,ifeng.com,DIRECT'
+    - 'DOMAIN-SUFFIX,ifengimg.com,DIRECT'
+    - 'DOMAIN-SUFFIX,ipip.net,DIRECT'
+    - 'DOMAIN-SUFFIX,iqiyi.com,DIRECT'
+    - 'DOMAIN-SUFFIX,jd.com,DIRECT'
+    - 'DOMAIN-SUFFIX,jianshu.com,DIRECT'
+    - 'DOMAIN-SUFFIX,knewone.com,DIRECT'
+    - 'DOMAIN-SUFFIX,le.com,DIRECT'
+    - 'DOMAIN-SUFFIX,lecloud.com,DIRECT'
+    - 'DOMAIN-SUFFIX,lemicp.com,DIRECT'
+    - 'DOMAIN-SUFFIX,licdn.com,DIRECT'
+    - 'DOMAIN-SUFFIX,luoo.net,DIRECT'
+    - 'DOMAIN-SUFFIX,meituan.com,DIRECT'
+    - 'DOMAIN-SUFFIX,meituan.net,DIRECT'
+    - 'DOMAIN-SUFFIX,mi.com,DIRECT'
+    - 'DOMAIN-SUFFIX,miaopai.com,DIRECT'
+    - 'DOMAIN-SUFFIX,microsoft.com,DIRECT'
+    - 'DOMAIN-SUFFIX,microsoftonline.com,DIRECT'
+    - 'DOMAIN-SUFFIX,miui.com,DIRECT'
+    - 'DOMAIN-SUFFIX,miwifi.com,DIRECT'
+    - 'DOMAIN-SUFFIX,mob.com,DIRECT'
+    - 'DOMAIN-SUFFIX,netease.com,DIRECT'
+    - 'DOMAIN-SUFFIX,office.com,DIRECT'
+    - 'DOMAIN-SUFFIX,office365.com,DIRECT'
+    - 'DOMAIN-KEYWORD,officecdn,DIRECT'
+    - 'DOMAIN-SUFFIX,oschina.net,DIRECT'
+    - 'DOMAIN-SUFFIX,ppsimg.com,DIRECT'
+    - 'DOMAIN-SUFFIX,pstatp.com,DIRECT'
+    - 'DOMAIN-SUFFIX,qcloud.com,DIRECT'
+    - 'DOMAIN-SUFFIX,qdaily.com,DIRECT'
+    - 'DOMAIN-SUFFIX,qdmm.com,DIRECT'
+    - 'DOMAIN-SUFFIX,qhimg.com,DIRECT'
+    - 'DOMAIN-SUFFIX,qhres.com,DIRECT'
+    - 'DOMAIN-SUFFIX,qidian.com,DIRECT'
+    - 'DOMAIN-SUFFIX,qihucdn.com,DIRECT'
+    - 'DOMAIN-SUFFIX,qiniu.com,DIRECT'
+    - 'DOMAIN-SUFFIX,qiniucdn.com,DIRECT'
+    - 'DOMAIN-SUFFIX,qiyipic.com,DIRECT'
+    - 'DOMAIN-SUFFIX,qq.com,DIRECT'
+    - 'DOMAIN-SUFFIX,qqurl.com,DIRECT'
+    - 'DOMAIN-SUFFIX,rarbg.to,DIRECT'
+    - 'DOMAIN-SUFFIX,ruguoapp.com,DIRECT'
+    - 'DOMAIN-SUFFIX,segmentfault.com,DIRECT'
+    - 'DOMAIN-SUFFIX,sinaapp.com,DIRECT'
+    - 'DOMAIN-SUFFIX,smzdm.com,DIRECT'
+    - 'DOMAIN-SUFFIX,snapdrop.net,DIRECT'
+    - 'DOMAIN-SUFFIX,sogou.com,DIRECT'
+    - 'DOMAIN-SUFFIX,sogoucdn.com,DIRECT'
+    - 'DOMAIN-SUFFIX,sohu.com,DIRECT'
+    - 'DOMAIN-SUFFIX,soku.com,DIRECT'
+    - 'DOMAIN-SUFFIX,speedtest.net,DIRECT'
+    - 'DOMAIN-SUFFIX,sspai.com,DIRECT'
+    - 'DOMAIN-SUFFIX,suning.com,DIRECT'
+    - 'DOMAIN-SUFFIX,taobao.com,DIRECT'
+    - 'DOMAIN-SUFFIX,tencent.com,DIRECT'
+    - 'DOMAIN-SUFFIX,tenpay.com,DIRECT'
+    - 'DOMAIN-SUFFIX,tianyancha.com,DIRECT'
+    - 'DOMAIN-SUFFIX,tmall.com,DIRECT'
+    - 'DOMAIN-SUFFIX,tudou.com,DIRECT'
+    - 'DOMAIN-SUFFIX,umetrip.com,DIRECT'
+    - 'DOMAIN-SUFFIX,upaiyun.com,DIRECT'
+    - 'DOMAIN-SUFFIX,upyun.com,DIRECT'
+    - 'DOMAIN-SUFFIX,veryzhun.com,DIRECT'
+    - 'DOMAIN-SUFFIX,weather.com,DIRECT'
+    - 'DOMAIN-SUFFIX,weibo.com,DIRECT'
+    - 'DOMAIN-SUFFIX,xiami.com,DIRECT'
+    - 'DOMAIN-SUFFIX,xiami.net,DIRECT'
+    - 'DOMAIN-SUFFIX,xiaomicp.com,DIRECT'
+    - 'DOMAIN-SUFFIX,ximalaya.com,DIRECT'
+    - 'DOMAIN-SUFFIX,xmcdn.com,DIRECT'
+    - 'DOMAIN-SUFFIX,xunlei.com,DIRECT'
+    - 'DOMAIN-SUFFIX,yhd.com,DIRECT'
+    - 'DOMAIN-SUFFIX,yihaodianimg.com,DIRECT'
+    - 'DOMAIN-SUFFIX,yinxiang.com,DIRECT'
+    - 'DOMAIN-SUFFIX,ykimg.com,DIRECT'
+    - 'DOMAIN-SUFFIX,youdao.com,DIRECT'
+    - 'DOMAIN-SUFFIX,youku.com,DIRECT'
+    - 'DOMAIN-SUFFIX,zealer.com,DIRECT'
+    - 'DOMAIN-SUFFIX,zhihu.com,DIRECT'
+    - 'DOMAIN-SUFFIX,zhimg.com,DIRECT'
+    - 'DOMAIN-SUFFIX,zimuzu.tv,DIRECT'
+    - 'DOMAIN-SUFFIX,zoho.com,DIRECT'
+    - 'DOMAIN-KEYWORD,amazon, ✈️ 节点选择'
+    - 'DOMAIN-KEYWORD,google, ✈️ 节点选择'
+    - 'DOMAIN-KEYWORD,gmail, ✈️ 节点选择'
+    - 'DOMAIN-KEYWORD,youtube, ✈️ 节点选择'
+    - 'DOMAIN-KEYWORD,facebook, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,fb.me, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,fbcdn.net, ✈️ 节点选择'
+    - 'DOMAIN-KEYWORD,twitter, ✈️ 节点选择'
+    - 'DOMAIN-KEYWORD,instagram, ✈️ 节点选择'
+    - 'DOMAIN-KEYWORD,dropbox, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,twimg.com, ✈️ 节点选择'
+    - 'DOMAIN-KEYWORD,blogspot, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,youtu.be, ✈️ 节点选择'
+    - 'DOMAIN-KEYWORD,whatsapp, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,9to5mac.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,abpchina.org, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,adblockplus.org, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,adobe.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,akamaized.net, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,alfredapp.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,amplitude.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,ampproject.org, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,android.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,angularjs.org, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,aolcdn.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,apkpure.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,appledaily.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,appshopper.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,appspot.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,arcgis.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,archive.org, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,armorgames.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,aspnetcdn.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,att.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,awsstatic.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,azureedge.net, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,azurewebsites.net, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,bing.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,bintray.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,bit.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,bit.ly, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,bitbucket.org, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,bjango.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,bkrtx.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,blog.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,blogcdn.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,blogger.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,blogsmithmedia.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,blogspot.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,blogspot.hk, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,bloomberg.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,box.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,box.net, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,cachefly.net, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,chromium.org, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,cl.ly, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,cloudflare.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,cloudfront.net, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,cloudmagic.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,cmail19.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,cnet.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,cocoapods.org, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,comodoca.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,crashlytics.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,culturedcode.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,d.pr, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,danilo.to, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,dayone.me, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,db.tt, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,deskconnect.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,disq.us, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,disqus.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,disquscdn.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,dnsimple.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,docker.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,dribbble.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,droplr.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,duckduckgo.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,dueapp.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,dytt8.net, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,edgecastcdn.net, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,edgekey.net, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,edgesuite.net, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,engadget.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,entrust.net, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,eurekavpt.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,evernote.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,fabric.io, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,fast.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,fastly.net, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,fc2.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,feedburner.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,feedly.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,feedsportal.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,fiftythree.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,firebaseio.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,flexibits.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,flickr.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,flipboard.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,g.co, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,gabia.net, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,geni.us, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,gfx.ms, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,ggpht.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,ghostnoteapp.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,git.io, ✈️ 节点选择'
+    - 'DOMAIN-KEYWORD,github, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,globalsign.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,gmodules.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,godaddy.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,golang.org, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,gongm.in, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,goo.gl, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,goodreaders.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,goodreads.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,gravatar.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,gstatic.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,gvt0.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,hockeyapp.net, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,hotmail.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,icons8.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,ifixit.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,ift.tt, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,ifttt.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,iherb.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,imageshack.us, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,img.ly, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,imgur.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,imore.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,instapaper.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,ipn.li, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,is.gd, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,issuu.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,itgonglun.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,itun.es, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,ixquick.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,j.mp, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,js.revsci.net, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,jshint.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,jtvnw.net, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,justgetflux.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,kat.cr, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,klip.me, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,libsyn.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,linkedin.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,line-apps.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,linode.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,lithium.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,littlehj.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,live.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,live.net, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,livefilestore.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,llnwd.net, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,macid.co, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,macromedia.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,macrumors.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,mashable.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,mathjax.org, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,medium.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,mega.co.nz, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,mega.nz, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,megaupload.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,microsofttranslator.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,mindnode.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,mobile01.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,modmyi.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,msedge.net, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,myfontastic.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,name.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,nextmedia.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,nsstatic.net, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,nssurge.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,nyt.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,nytimes.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,omnigroup.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,onedrive.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,onenote.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,ooyala.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,openvpn.net, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,openwrt.org, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,orkut.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,osxdaily.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,outlook.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,ow.ly, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,paddleapi.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,parallels.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,parse.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,pdfexpert.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,periscope.tv, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,pinboard.in, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,pinterest.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,pixelmator.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,pixiv.net, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,playpcesor.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,playstation.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,playstation.com.hk, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,playstation.net, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,playstationnetwork.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,pushwoosh.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,rime.im, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,servebom.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,sfx.ms, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,shadowsocks.org, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,sharethis.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,shazam.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,skype.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,smartdns ✈️ 节点选择.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,smartmailcloud.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,sndcdn.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,sony.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,soundcloud.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,sourceforge.net, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,spotify.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,squarespace.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,sstatic.net, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,st.luluku.pw, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,stackoverflow.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,startpage.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,staticflickr.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,steamcommunity.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,symauth.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,symcb.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,symcd.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,tapbots.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,tapbots.net, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,tdesktop.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,techcrunch.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,techsmith.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,thepiratebay.org, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,theverge.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,time.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,timeinc.net, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,tiny.cc, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,tinypic.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,tmblr.co, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,todoist.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,trello.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,trustasiassl.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,tumblr.co, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,tumblr.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,tweetdeck.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,tweetmarker.net, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,twitch.tv, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,txmblr.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,typekit.net, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,ubertags.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,ublock.org, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,ubnt.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,ulyssesapp.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,urchin.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,usertrust.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,v.gd, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,v2ex.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,vimeo.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,vimeocdn.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,vine.co, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,vivaldi.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,vox-cdn.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,vsco.co, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,vultr.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,w.org, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,w3schools.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,webtype.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,wikiwand.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,wikileaks.org, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,wikimedia.org, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,wikipedia.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,wikipedia.org, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,windows.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,windows.net, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,wire.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,wordpress.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,workflowy.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,wp.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,wsj.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,wsj.net, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,xda-developers.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,xeeno.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,xiti.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,yahoo.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,yimg.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,ying.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,yoyo.org, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,ytimg.com, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,telegra.ph, ✈️ 节点选择'
+    - 'DOMAIN-SUFFIX,telegram.org, ✈️ 节点选择'
+    - 'IP-CIDR,91.108.4.0/22, ✈️ 节点选择,no-resolve'
+    - 'IP-CIDR,91.108.8.0/21, ✈️ 节点选择,no-resolve'
+    - 'IP-CIDR,91.108.16.0/22, ✈️ 节点选择,no-resolve'
+    - 'IP-CIDR,91.108.56.0/22, ✈️ 节点选择,no-resolve'
+    - 'IP-CIDR,149.154.160.0/20, ✈️ 节点选择,no-resolve'
+    - 'IP-CIDR6,2001:67c:4e8::/48, ✈️ 节点选择,no-resolve'
+    - 'IP-CIDR6,2001:b28:f23d::/48, ✈️ 节点选择,no-resolve'
+    - 'IP-CIDR6,2001:b28:f23f::/48, ✈️ 节点选择,no-resolve'
+    - 'IP-CIDR,120.232.181.162/32, ✈️ 节点选择,no-resolve'
+    - 'IP-CIDR,120.241.147.226/32, ✈️ 节点选择,no-resolve'
+    - 'IP-CIDR,120.253.253.226/32, ✈️ 节点选择,no-resolve'
+    - 'IP-CIDR,120.253.255.162/32, ✈️ 节点选择,no-resolve'
+    - 'IP-CIDR,120.253.255.34/32, ✈️ 节点选择,no-resolve'
+    - 'IP-CIDR,120.253.255.98/32, ✈️ 节点选择,no-resolve'
+    - 'IP-CIDR,180.163.150.162/32, ✈️ 节点选择,no-resolve'
+    - 'IP-CIDR,180.163.150.34/32, ✈️ 节点选择,no-resolve'
+    - 'IP-CIDR,180.163.151.162/32, ✈️ 节点选择,no-resolve'
+    - 'IP-CIDR,180.163.151.34/32, ✈️ 节点选择,no-resolve'
+    - 'IP-CIDR,203.208.39.0/24, ✈️ 节点选择,no-resolve'
+    - 'IP-CIDR,203.208.40.0/24, ✈️ 节点选择,no-resolve'
+    - 'IP-CIDR,203.208.41.0/24, ✈️ 节点选择,no-resolve'
+    - 'IP-CIDR,203.208.43.0/24, ✈️ 节点选择,no-resolve'
+    - 'IP-CIDR,203.208.50.0/24, ✈️ 节点选择,no-resolve'
+    - 'IP-CIDR,220.181.174.162/32, ✈️ 节点选择,no-resolve'
+    - 'IP-CIDR,220.181.174.226/32, ✈️ 节点选择,no-resolve'
+    - 'IP-CIDR,220.181.174.34/32, ✈️ 节点选择,no-resolve'
+    - 'DOMAIN,injections.adguard.org,DIRECT'
+    - 'DOMAIN,local.adguard.org,DIRECT'
+    - 'DOMAIN-SUFFIX,local,DIRECT'
+    - 'IP-CIDR,127.0.0.0/8,DIRECT'
+    - 'IP-CIDR,172.16.0.0/12,DIRECT'
+    - 'IP-CIDR,192.168.0.0/16,DIRECT'
+    - 'IP-CIDR,10.0.0.0/8,DIRECT'
+    - 'IP-CIDR,17.0.0.0/8,DIRECT'
+    - 'IP-CIDR,100.64.0.0/10,DIRECT'
+    - 'IP-CIDR,224.0.0.0/4,DIRECT'
+    - 'IP-CIDR6,fe80::/10,DIRECT'
+    - 'DOMAIN-SUFFIX,cn,DIRECT'
+    - 'DOMAIN-KEYWORD,-cn,DIRECT'
+    - 'GEOIP,CN,DIRECT'
+    - 'MATCH, ✈️ 节点选择'
